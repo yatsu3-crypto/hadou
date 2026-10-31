@@ -8,9 +8,11 @@ const Engine = ctx.module.exports;
 const rd = f => JSON.parse(fs.readFileSync(path.join(root, 'data', f), 'utf8'));
 const DATA = rd('busho.json'), W = rd('weights.json'), TAGS = rd('tags.json');
 const P = Engine.prepare(DATA, W, TAGS);
-// 全通り探索と比べるのは先頭10人だけ（40人だと組み合わせが多すぎる）
-const all = DATA.busho.slice(0, 10).map(b => b.id);
-const all40 = DATA.busho.map(b => b.id);
+// テストはダミー武将だけで行う（実データが増えても結果が変わらないように）
+// 全通り探索と比べるのはダミーの先頭10人だけ（40人だと組み合わせが多すぎる）
+const dummies = DATA.busho.filter(b => b.dummy);
+const all = dummies.slice(0, 10).map(b => b.id);
+const all40 = dummies.map(b => b.id);
 let fail = 0;
 const ok = (c, m) => { console.log((c ? '  OK  ' : '  NG  ') + m); if (!c) fail++; };
 const name = id => Engine.nameOf(P, id);
@@ -30,6 +32,8 @@ function brute(kind, mode, axis) {
     const iv = c.map(id => W.slots.map(sl => Engine.indiv(P, id, sl, kind, mode).total));
     for (const p of P7) {
       // p[i] = c の何番目を枠 i に置くか
+      // p[0] が大将。大将時の兵科がある武将は、その兵科の部隊でしか大将にしない
+      const lead = P.info.get(c[p[0]]).b.taisho_heika; if (lead && lead !== kind) continue;
       if (axis) { const s = p.indexOf(c.indexOf(axis.id)); const sl = W.slots[s]; if (axis.pos !== '任意' && sl.position !== axis.pos) continue; if (axis.side !== '任意' && sl.side !== axis.side) continue; }
       let s = ts; for (let i = 0; i < 7; i++) s += iv[p[i]][i];
       if (s > best) { best = s; bestU = p.map(j => c[j]); }
@@ -40,8 +44,8 @@ function brute(kind, mode, axis) {
 
 console.log('■ 1部隊：全通り探索と一致するか');
 for (const [kind, mode, axis] of [['騎馬', '破壊', null], ['弓', '対人', null], ['騎馬', '防衛', null],
-  ['騎馬', '破壊', { id: 'toyotomi_hideyoshi', pos: '与力', side: '右' }],
-  ['弓', '破壊', { id: 'honda_tadakatsu', pos: '大将', side: '任意' }]]) {
+  ['騎馬', '破壊', { id: 'dummy_toyotomi_hideyoshi', pos: '与力', side: '右' }],
+  ['弓', '破壊', { id: 'dummy_honda_tadakatsu', pos: '大将', side: '任意' }]]) {
   const r = Engine.search(P, { owned: all, kinds: [kind], mode, axes: axis ? [axis] : [] });
   const b = brute(kind, mode, axis);
   const top = r.results[0];
@@ -61,21 +65,21 @@ for (const [kind, mode, axis] of [['騎馬', '破壊', null], ['弓', '対人', 
 console.log('■ エラー表示');
 let r = Engine.search(P, { owned: all, kinds: ['騎馬', '弓'], mode: '破壊', axes: [] });
 ok(r.error && r.error.includes('14人'), '人数不足：' + r.error);
-r = Engine.search(P, { owned: all.filter(i => i !== 'toyotomi_hideyoshi'), kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'toyotomi_hideyoshi', pos: '任意', side: '任意' }] });
+r = Engine.search(P, { owned: all.filter(i => i !== 'dummy_toyotomi_hideyoshi'), kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'dummy_toyotomi_hideyoshi', pos: '任意', side: '任意' }] });
 ok(r.error && r.error.includes('所持'), '軸が未所持：' + r.error);
-r = Engine.search(P, { owned: all, kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'toyotomi_hideyoshi', pos: '大将', side: '任意' }, { id: 'oda_nobunaga', pos: '大将', side: '任意' }] });
+r = Engine.search(P, { owned: all, kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'dummy_toyotomi_hideyoshi', pos: '大将', side: '任意' }, { id: 'dummy_uesugi_kenshin', pos: '大将', side: '任意' }] });
 ok(r.error && r.error.includes('枠'), '大将を2人指定：' + r.error);
 
 console.log('■ 混成（ダミー40人で確認）');
 const kinds = ['騎馬', '騎馬', '騎馬', '弓', '弓'];
 const t0 = Date.now();
-r = Engine.search(P, { owned: all40, kinds, mode: '破壊', axes: [{ id: 'toyotomi_hideyoshi', pos: '大将', side: '任意' }] });
+r = Engine.search(P, { owned: all40, kinds, mode: '破壊', axes: [{ id: 'dummy_toyotomi_hideyoshi', pos: '大将', side: '任意' }] });
 const ms = Date.now() - t0;
 ok(!r.error, `騎馬3・弓2 を探索（${ms}ms、候補 ${r.explored}）`);
 const ids = r.results[0].units.flatMap(u => u.slots.map(s => s.id));
 ok(new Set(ids).size === 35, '35人に重複なし');
 ok(r.results.length === 3 && r.results.every(e => Math.abs(e.total - e.searchTotal) < 1e-6), '上位3件・点数一致：' + r.results.map(e => e.total.toFixed(1)).join(' / '));
-ok(r.results.every(ev => ev.units.some(u => u.slots[0].id === 'toyotomi_hideyoshi')), '全件で秀吉が大将');
+ok(r.results.every(ev => ev.units.some(u => u.slots[0].id === 'dummy_toyotomi_hideyoshi')), '全件で秀吉が大将');
 ok(ms < 3000, '3秒以内');
 const mem = ev => new Set(ev.units.flatMap(u => u.slots.map(s => s.id)));
 const dif = (a, b) => [...mem(a)].filter(x => !mem(b).has(x)).length;
@@ -84,13 +88,25 @@ ok(dif(r.results[1], r.results[0]) >= 2 && dif(r.results[2], r.results[0]) >= 2 
 r.results[0].units.forEach((u, i) => console.log(`     第${i + 1}部隊 ${u.kind}（${u.role}） ${u.score.toFixed(1)}点：` + u.slots.map(s => name(s.id) + s.r.letter).join(' ')));
 Engine.explain(P, r.results[0], '破壊', []).good.forEach(t => console.log('       ・' + t));
 
+console.log('■ 大将時の兵科');
+const leadOk = res => res.results.every(ev => ev.units.every(u => { const t = P.info.get(u.slots[0].id).b.taisho_heika; return !t || t === u.kind; }));
+let rl = Engine.search(P, { owned: all40, kinds: ['騎馬', '騎馬', '騎馬', '弓', '弓'], mode: '対人', axes: [] });
+ok(!rl.error && leadOk(rl), '混成の全部隊で、大将時の兵科と部隊の兵科が合っている');
+rl = Engine.search(P, { owned: all40, kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'dummy_oda_nobunaga', pos: '大将', side: '任意' }] });
+ok(rl.error && rl.error.includes('大将時の兵科が鉄砲'), '大将時の兵科が鉄砲の信長を騎馬の大将に指定するとエラー：' + rl.error);
+rl = Engine.search(P, { owned: all40, kinds: ['騎馬'], mode: '破壊', axes: [{ id: 'dummy_oda_nobunaga', pos: '任意', side: '任意' }] });
+ok(!rl.error && rl.results.every(ev => ev.units[0].slots[0].id !== 'dummy_oda_nobunaga' && ev.units[0].slots.some(s => s.id === 'dummy_oda_nobunaga')), '信長を「任意」で軸にすると、騎馬部隊では大将以外に入る');
+const DL = JSON.parse(JSON.stringify(DATA)); DL.busho.filter(b => b.dummy).slice(0, 10).forEach(b => { b.taisho_heika = '騎馬'; });
+rl = Engine.search(Engine.prepare(DL, W, TAGS), { owned: all, kinds: ['弓'], mode: '破壊', axes: [] });
+ok(rl.error && rl.error.includes('大将になれる武将が足りません'), '弓の大将になれる武将がいないとエラー：' + rl.error);
+
 console.log('■ 縁（タグ）の発動人数を3人にした場合');
 const W3 = JSON.parse(JSON.stringify(W)); W3.en_min_members = 3;
 const P3 = Engine.prepare(DATA, W3, TAGS);
 const enNames = ids => Engine.team(P3, ids, '騎馬', '破壊').parts.filter(p => p.type === 'en').map(p => p.name);
-let en3 = enNames(['tokugawa_ieyasu', 'honda_tadakatsu', 'date_masamune', 'mori_motonari', 'shimazu_yoshihiro', 'sanada_yukimura', 'takeda_shingen']);
+let en3 = enNames(['dummy_tokugawa_ieyasu', 'dummy_honda_tadakatsu', 'dummy_date_masamune', 'dummy_mori_motonari', 'dummy_shimazu_yoshihiro', 'dummy_sanada_yukimura', 'dummy_takeda_shingen']);
 ok(!en3.includes('三河武士（仮）'), '2人の縁（三河武士）は発動しない：' + (en3.join('・') || 'なし'));
-en3 = enNames(['tokugawa_ieyasu', 'honda_tadakatsu', 'oda_nobunaga', 'toyotomi_hideyoshi', 'shimazu_yoshihiro', 'sanada_yukimura', 'takeda_shingen']);
+en3 = enNames(['dummy_tokugawa_ieyasu', 'dummy_honda_tadakatsu', 'dummy_oda_nobunaga', 'dummy_toyotomi_hideyoshi', 'dummy_shimazu_yoshihiro', 'dummy_sanada_yukimura', 'dummy_takeda_shingen']);
 ok(en3.includes('天下人（仮）'), '3人そろった縁（天下人）は発動する：' + en3.join('・'));
 const r3 = Engine.search(P3, { owned: all40, kinds: ['騎馬', '弓'], mode: '対人', axes: [] });
 ok(r3.results.every(e => Math.abs(e.total - e.searchTotal) < 1e-6), '発動人数3人でも高速版と表示用の点数が一致');

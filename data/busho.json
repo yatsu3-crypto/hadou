@@ -3,13 +3,13 @@
     "schema_version": 2,
     "season": 16,
     "updated": "2026-10-31",
-    "dummy": true,
-    "source": "ダミーデータ40人（画面と評価の動作確認用。技能・戦法・縁・適性・能力値は実際のゲームとは無関係）"
+    "source": "実データとダミーデータ（dummy: true、名前に（仮））の混在。ダミーの技能・戦法・縁・適性・能力値は実際のゲームとは無関係"
   },
   "busho": [
     {
-      "id": "toyotomi_hideyoshi",
-      "name": "豊臣秀吉",
+      "id": "dummy_toyotomi_hideyoshi",
+      "name": "豊臣秀吉（仮）",
+      "dummy": true,
       "rarity": "UR",
       "aptitude": {
         "足軽": "A",
@@ -19,6 +19,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 944,
         "武勇": 1097,
@@ -114,8 +115,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "oda_nobunaga",
-      "name": "織田信長",
+      "id": "dummy_oda_nobunaga",
+      "name": "織田信長（仮）",
+      "dummy": true,
       "rarity": "UR",
       "aptitude": {
         "足軽": "B",
@@ -125,6 +127,7 @@
         "剣豪": "B",
         "忍者": "A"
       },
+      "taisho_heika": "鉄砲",
       "stats": {
         "統率": 904,
         "武勇": 1062,
@@ -220,8 +223,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "tokugawa_ieyasu",
-      "name": "徳川家康",
+      "id": "dummy_tokugawa_ieyasu",
+      "name": "徳川家康（仮）",
+      "dummy": true,
       "rarity": "UR",
       "aptitude": {
         "足軽": "S",
@@ -231,6 +235,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": "足軽",
       "stats": {
         "統率": 1035,
         "武勇": 1018,
@@ -325,8 +330,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "takeda_shingen",
-      "name": "武田信玄",
+      "id": "dummy_takeda_shingen",
+      "name": "武田信玄（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "A",
@@ -336,6 +342,7 @@
         "剣豪": "C",
         "忍者": "A"
       },
+      "taisho_heika": "騎馬",
       "stats": {
         "統率": 857,
         "武勇": 874,
@@ -430,8 +437,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "uesugi_kenshin",
-      "name": "上杉謙信",
+      "id": "dummy_uesugi_kenshin",
+      "name": "上杉謙信（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "S",
@@ -441,6 +449,7 @@
         "剣豪": "C",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 877,
         "武勇": 842,
@@ -536,8 +545,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "sanada_yukimura",
-      "name": "真田幸村",
+      "id": "dummy_sanada_yukimura",
+      "name": "真田幸村（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "A",
@@ -547,6 +557,7 @@
         "剣豪": "B",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 844,
         "武勇": 867,
@@ -640,8 +651,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "honda_tadakatsu",
-      "name": "本多忠勝",
+      "id": "dummy_honda_tadakatsu",
+      "name": "本多忠勝（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "S",
@@ -651,6 +663,7 @@
         "剣豪": "B",
         "忍者": "S"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 862,
         "武勇": 861,
@@ -746,8 +759,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "date_masamune",
-      "name": "伊達政宗",
+      "id": "dummy_date_masamune",
+      "name": "伊達政宗（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -757,6 +771,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 802,
         "武勇": 729,
@@ -849,8 +864,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "mori_motonari",
-      "name": "毛利元就",
+      "id": "dummy_mori_motonari",
+      "name": "毛利元就（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "A",
@@ -860,6 +876,7 @@
         "剣豪": "B",
         "忍者": "A"
       },
+      "taisho_heika": "弓",
       "stats": {
         "統率": 734,
         "武勇": 738,
@@ -954,8 +971,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "shimazu_yoshihiro",
-      "name": "島津義弘",
+      "id": "dummy_shimazu_yoshihiro",
+      "name": "島津義弘（仮）",
+      "dummy": true,
       "rarity": "R",
       "aptitude": {
         "足軽": "A",
@@ -965,6 +983,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 755,
         "武勇": 663,
@@ -1057,8 +1076,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "maeda_toshiie",
-      "name": "前田利家",
+      "id": "dummy_maeda_toshiie",
+      "name": "前田利家（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "A",
@@ -1068,6 +1088,7 @@
         "剣豪": "B",
         "忍者": "S"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 893,
         "武勇": 848,
@@ -1161,8 +1182,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "shibata_katsuie",
-      "name": "柴田勝家",
+      "id": "dummy_shibata_katsuie",
+      "name": "柴田勝家（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "C",
@@ -1172,6 +1194,7 @@
         "剣豪": "S",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 802,
         "武勇": 805,
@@ -1265,8 +1288,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kato_kiyomasa",
-      "name": "加藤清正",
+      "id": "dummy_kato_kiyomasa",
+      "name": "加藤清正（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "B",
@@ -1276,6 +1300,7 @@
         "剣豪": "B",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 862,
         "武勇": 910,
@@ -1370,8 +1395,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "fukushima_masanori",
-      "name": "福島正則",
+      "id": "dummy_fukushima_masanori",
+      "name": "福島正則（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -1381,6 +1407,7 @@
         "剣豪": "B",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 888,
         "武勇": 865,
@@ -1475,8 +1502,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "yamagata_masakage",
-      "name": "山県昌景",
+      "id": "dummy_yamagata_masakage",
+      "name": "山県昌景（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "B",
@@ -1486,6 +1514,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 838,
         "武勇": 914,
@@ -1579,8 +1608,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "baba_nobuharu",
-      "name": "馬場信春",
+      "id": "dummy_baba_nobuharu",
+      "name": "馬場信春（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -1590,6 +1620,7 @@
         "剣豪": "S",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 775,
         "武勇": 811,
@@ -1684,8 +1715,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kosaka_masanobu",
-      "name": "高坂昌信",
+      "id": "dummy_kosaka_masanobu",
+      "name": "高坂昌信（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -1695,6 +1727,7 @@
         "剣豪": "A",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 701,
         "武勇": 748,
@@ -1789,8 +1822,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kakizaki_kageie",
-      "name": "柿崎景家",
+      "id": "dummy_kakizaki_kageie",
+      "name": "柿崎景家（仮）",
+      "dummy": true,
       "rarity": "R",
       "aptitude": {
         "足軽": "C",
@@ -1800,6 +1834,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 807,
         "武勇": 813,
@@ -1892,8 +1927,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "ii_naomasa",
-      "name": "井伊直政",
+      "id": "dummy_ii_naomasa",
+      "name": "井伊直政（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "B",
@@ -1903,6 +1939,7 @@
         "剣豪": "A",
         "忍者": "S"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 907,
         "武勇": 879,
@@ -1998,8 +2035,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "sakakibara_yasumasa",
-      "name": "榊原康政",
+      "id": "dummy_sakakibara_yasumasa",
+      "name": "榊原康政（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "A",
@@ -2009,6 +2047,7 @@
         "剣豪": "S",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 889,
         "武勇": 825,
@@ -2104,8 +2143,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "sakai_tadatsugu",
-      "name": "酒井忠次",
+      "id": "dummy_sakai_tadatsugu",
+      "name": "酒井忠次（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -2115,6 +2155,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 876,
         "武勇": 900,
@@ -2209,8 +2250,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "shima_sakon",
-      "name": "島左近",
+      "id": "dummy_shima_sakon",
+      "name": "島左近（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -2220,6 +2262,7 @@
         "剣豪": "C",
         "忍者": "S"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 714,
         "武勇": 716,
@@ -2314,8 +2357,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "tachibana_muneshige",
-      "name": "立花宗茂",
+      "id": "dummy_tachibana_muneshige",
+      "name": "立花宗茂（仮）",
+      "dummy": true,
       "rarity": "UR",
       "aptitude": {
         "足軽": "B",
@@ -2325,6 +2369,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 1007,
         "武勇": 1000,
@@ -2418,8 +2463,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kikkawa_motoharu",
-      "name": "吉川元春",
+      "id": "dummy_kikkawa_motoharu",
+      "name": "吉川元春（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "A",
@@ -2429,6 +2475,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 784,
         "武勇": 801,
@@ -2524,8 +2571,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "azai_nagamasa",
-      "name": "浅井長政",
+      "id": "dummy_azai_nagamasa",
+      "name": "浅井長政（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -2535,6 +2583,7 @@
         "剣豪": "S",
         "忍者": "S"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 846,
         "武勇": 786,
@@ -2628,8 +2677,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "saito_dosan",
-      "name": "斎藤道三",
+      "id": "dummy_saito_dosan",
+      "name": "斎藤道三（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "A",
@@ -2639,6 +2689,7 @@
         "剣豪": "C",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 878,
         "武勇": 705,
@@ -2730,8 +2781,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "chosokabe_motochika",
-      "name": "長宗我部元親",
+      "id": "dummy_chosokabe_motochika",
+      "name": "長宗我部元親（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "A",
@@ -2741,6 +2793,7 @@
         "剣豪": "A",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 905,
         "武勇": 960,
@@ -2833,8 +2886,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "ukita_hideie",
-      "name": "宇喜多秀家",
+      "id": "dummy_ukita_hideie",
+      "name": "宇喜多秀家（仮）",
+      "dummy": true,
       "rarity": "R",
       "aptitude": {
         "足軽": "B",
@@ -2844,6 +2898,7 @@
         "剣豪": "S",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 772,
         "武勇": 634,
@@ -2936,8 +2991,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "akechi_mitsuhide",
-      "name": "明智光秀",
+      "id": "dummy_akechi_mitsuhide",
+      "name": "明智光秀（仮）",
+      "dummy": true,
       "rarity": "UR",
       "aptitude": {
         "足軽": "A",
@@ -2947,6 +3003,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 1069,
         "武勇": 1015,
@@ -3040,8 +3097,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "ishida_mitsunari",
-      "name": "石田三成",
+      "id": "dummy_ishida_mitsunari",
+      "name": "石田三成（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "A",
@@ -3051,6 +3109,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 851,
         "武勇": 911,
@@ -3146,8 +3205,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kuroda_kanbei",
-      "name": "黒田官兵衛",
+      "id": "dummy_kuroda_kanbei",
+      "name": "黒田官兵衛（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "B",
@@ -3157,6 +3217,7 @@
         "剣豪": "S",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 947,
         "武勇": 870,
@@ -3252,8 +3313,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "takenaka_hanbei",
-      "name": "竹中半兵衛",
+      "id": "dummy_takenaka_hanbei",
+      "name": "竹中半兵衛（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -3263,6 +3325,7 @@
         "剣豪": "A",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 768,
         "武勇": 757,
@@ -3357,8 +3420,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "naoe_kanetsugu",
-      "name": "直江兼続",
+      "id": "dummy_naoe_kanetsugu",
+      "name": "直江兼続（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -3368,6 +3432,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 816,
         "武勇": 730,
@@ -3463,8 +3528,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "hojo_ujiyasu",
-      "name": "北条氏康",
+      "id": "dummy_hojo_ujiyasu",
+      "name": "北条氏康（仮）",
+      "dummy": true,
       "rarity": "SSR",
       "aptitude": {
         "足軽": "B",
@@ -3474,6 +3540,7 @@
         "剣豪": "A",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 815,
         "武勇": 810,
@@ -3566,8 +3633,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "imagawa_yoshimoto",
-      "name": "今川義元",
+      "id": "dummy_imagawa_yoshimoto",
+      "name": "今川義元（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "C",
@@ -3577,6 +3645,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 816,
         "武勇": 707,
@@ -3669,8 +3738,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "otomo_sorin",
-      "name": "大友宗麟",
+      "id": "dummy_otomo_sorin",
+      "name": "大友宗麟（仮）",
+      "dummy": true,
       "rarity": "R",
       "aptitude": {
         "足軽": "A",
@@ -3680,6 +3750,7 @@
         "剣豪": "B",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 668,
         "武勇": 604,
@@ -3772,8 +3843,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "asakura_yoshikage",
-      "name": "朝倉義景",
+      "id": "dummy_asakura_yoshikage",
+      "name": "朝倉義景（仮）",
+      "dummy": true,
       "rarity": "N",
       "aptitude": {
         "足軽": "C",
@@ -3783,6 +3855,7 @@
         "剣豪": "C",
         "忍者": "B"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 678,
         "武勇": 500,
@@ -3875,8 +3948,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "matsunaga_hisahide",
-      "name": "松永久秀",
+      "id": "dummy_matsunaga_hisahide",
+      "name": "松永久秀（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -3886,6 +3960,7 @@
         "剣豪": "B",
         "忍者": "A"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 830,
         "武勇": 718,
@@ -3979,8 +4054,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "otani_yoshitsugu",
-      "name": "大谷吉継",
+      "id": "dummy_otani_yoshitsugu",
+      "name": "大谷吉継（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -3990,6 +4066,7 @@
         "剣豪": "C",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 755,
         "武勇": 714,
@@ -4084,8 +4161,9 @@
       "updated": "2026-10-31"
     },
     {
-      "id": "kobayakawa_takakage",
-      "name": "小早川隆景",
+      "id": "dummy_kobayakawa_takakage",
+      "name": "小早川隆景（仮）",
+      "dummy": true,
       "rarity": "SR",
       "aptitude": {
         "足軽": "B",
@@ -4095,6 +4173,7 @@
         "剣豪": "C",
         "忍者": "C"
       },
+      "taisho_heika": null,
       "stats": {
         "統率": 884,
         "武勇": 851,
@@ -4187,6 +4266,59 @@
       "season": 16,
       "source": "ダミー",
       "updated": "2026-10-31"
+    },
+    {
+      "id": "uesugi_kenshin",
+      "name": "上杉謙信",
+      "rarity": "UR",
+      "aptitude": {
+        "足軽": "S",
+        "騎馬": "S",
+        "弓": "A",
+        "鉄砲": "C",
+        "剣豪": "A",
+        "忍者": "B"
+      },
+      "taisho_heika": null,
+      "stats": {
+        "統率": 1088,
+        "武勇": 1100,
+        "知略": 770,
+        "政治": 670
+      },
+      "power": 6648,
+      "tenpu": null,
+      "skills": [],
+      "kaiden": [],
+      "senpo": {
+        "name": null,
+        "lineage": null,
+        "desc": "味方3部隊に金剛3%×3回・戦法速度上昇20%付与、敵4部隊の強化効果3つ打ち消し、敵4部隊に武勇400%攻撃。戦法間隔30秒。技能「神気」で初回戦法24秒。",
+        "tags": [
+          "ダメージ",
+          "バフ",
+          "デバフ"
+        ]
+      },
+      "en": [
+        "上杉家",
+        "平氏",
+        "軍神",
+        "龍",
+        "酒豪"
+      ],
+      "season": null,
+      "source": "旧アプリ「覇道 編成ノート」の手入力データ（能力値は最大ステータス）",
+      "updated": "2026-10-02",
+      "missing": [
+        "大将時の兵科",
+        "天賦",
+        "技能",
+        "皆伝",
+        "戦法の名前",
+        "戦法の系統",
+        "シーズン"
+      ]
     }
   ]
 }

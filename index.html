@@ -354,6 +354,8 @@ var Engine = (function(){
       var ax = axes[a];
       if (axisMap.has(ax.id)) return { error:'同じ武将が軸に2回指定されています：' + nameOf(P, ax.id) };
       if (!poolSet.has(ax.id)) return { error:'軸武将「' + nameOf(P, ax.id) + '」が所持武将に入っていません。所持武将タブでチェックしてください。' };
+      var axTh = P.info.get(ax.id).b.taisho_heika;
+      if (ax.pos === '大将' && axTh && kinds.indexOf(axTh) < 0) return { error:'軸武将「' + nameOf(P, ax.id) + '」は大将時の兵科が' + axTh + 'なので、' + axTh + 'の部隊がないと大将にできません。位置を「任意」か副将・与力にするか、' + axTh + 'の部隊を入れてください。' };
       axisMap.set(ax.id, ax);
     }
     var need = U * K;
@@ -372,7 +374,26 @@ var Engine = (function(){
     pool.forEach(function(id, i){ idx.set(id, i); });
     var isAxis = new Uint8Array(N);
     axisMap.forEach(function(ax, id){ isAxis[idx.get(id)] = 1; });
-    function allowedI(i, s){ return !isAxis[i] || allowed(pool[i], s); }
+    // 大将時の兵科（taisho_heika）がある武将は、その兵科の部隊でしか大将にしない。空欄の武将は適性で判定
+    var th = pool.map(function(id){ return P.info.get(id).b.taisho_heika || null; });
+    function allowedU(i, s, u){
+      if (isAxis[i] && !allowed(pool[i], s)) return false;
+      if (S[s].position === '大将' && th[i] && th[i] !== kinds[u]) return false;
+      return true;
+    }
+    // 大将になれる武将が足りるか（どの兵科の組み合わせでも、なれる人数が部隊数以上か）
+    var kindList = Array.from(new Set(kinds)), needK = {};
+    kinds.forEach(function(k){ needK[k] = (needK[k] || 0) + 1; });
+    var freeLead = th.filter(function(t){ return !t; }).length;
+    for (var mset = 1; mset < (1 << kindList.length); mset++) {
+      var sumNeed = 0, sumHave = freeLead, names = [];
+      kindList.forEach(function(k, bi){
+        if (!(mset & (1 << bi))) return;
+        sumNeed += needK[k]; names.push(k);
+        sumHave += th.filter(function(t){ return t === k; }).length;
+      });
+      if (sumHave < sumNeed) return { error:names.join('・') + 'の部隊の大将になれる武将が足りません（必要 ' + sumNeed + '人・いる ' + sumHave + '人）。大将時の兵科が別の兵科の武将は、その兵科の部隊でしか大将になれません。' };
+    }
 
     // 1人ずつの点を先に計算（兵科×枠×武将）
     var memo = {};
@@ -450,17 +471,23 @@ var Engine = (function(){
       if (!first) axOrder.sort(function(){ return rand() - 0.5; });
       for (var a = 0; a < axOrder.length; a++) {
         var i = idx.get(axOrder[a].id), cands = [];
-        for (var u = 0; u < U; u++) for (var s = 0; s < K; s++) if (units[u][s] < 0 && allowedI(i, s)) cands.push([u, s]);
-        if (!cands.length) return null;
+        for (var u = 0; u < U; u++) for (var s = 0; s < K; s++) if (units[u][s] < 0 && allowedU(i, s, u)) cands.push([u, s]);
+        if (!cands.length) return 'axis';
         // 軸は一番点の高い空き枠を基本に、2回目以降はランダムに置く
         cands.sort(function(x, y){ return V[y[0]][y[1]][i] - V[x[0]][x[1]][i]; });
         var pick = first ? cands[0] : cands[Math.floor(rand() * cands.length)];
         units[pick[0]][pick[1]] = i; used[i] = 1;
       }
-      for (var u2 = 0; u2 < U; u2++) for (var s2 = 0; s2 < K; s2++) {
+      // 大将の枠を先に埋める（大将時の兵科の制約があるため）
+      var order = [];
+      for (var u3 = 0; u3 < U; u3++) for (var s3 = 0; s3 < K; s3++) order.push([u3, s3]);
+      order.sort(function(x, y){ return (S[y[1]].position === '大将') - (S[x[1]].position === '大将'); });
+      for (var oi = 0; oi < order.length; oi++) {
+        var u2 = order[oi][0], s2 = order[oi][1];
         if (units[u2][s2] >= 0) continue;
         var cs = [];
-        for (var c = 0; c < N; c++) if (!used[c] && !isAxis[c]) cs.push(c);
+        for (var c = 0; c < N; c++) if (!used[c] && !isAxis[c] && allowedU(c, s2, u2)) cs.push(c);
+        if (!cs.length) return 'leader';
         var Vs = V[u2][s2];
         cs.sort(function(x, y){ return Vs[y] - Vs[x]; });
         var k = first ? 0 : Math.floor(Math.pow(rand(), 2) * Math.min(5, cs.length));
@@ -480,7 +507,7 @@ var Engine = (function(){
           var arr = units[u], cur = arr[s];
           if (isAxis[cur]) continue;
           for (var c = 0; c < N; c++) {
-            if (used[c] || (banned && banned[c])) continue;
+            if (used[c] || (banned && banned[c]) || !allowedU(c, s, u)) continue;
             arr[s] = c;
             var ns = unitScore(u, arr);
             if (ns > sc[u] + 1e-9) { sc[u] = ns; used[cur] = 0; used[c] = 1; cur = c; improved = true; }
@@ -491,7 +518,7 @@ var Engine = (function(){
         for (var u1 = 0; u1 < U; u1++) for (var i = 0; i < K; i++) for (var j = i + 1; j < K; j++) {
           if (S[i].position === S[j].position && S[i].side === S[j].side) continue;
           var A = units[u1], x = A[i], y = A[j];
-          if (!allowedI(x, j) || !allowedI(y, i)) continue;
+          if (!allowedU(x, j, u1) || !allowedU(y, i, u1)) continue;
           A[i] = y; A[j] = x;
           var n1 = unitScore(u1, A);
           if (n1 > sc[u1] + 1e-9) { sc[u1] = n1; improved = true; } else { A[i] = x; A[j] = y; }
@@ -499,7 +526,7 @@ var Engine = (function(){
         // ③ 別の部隊と入れ替え
         for (var p = 0; p < U; p++) for (var q = p + 1; q < U; q++) for (var i2 = 0; i2 < K; i2++) for (var j2 = 0; j2 < K; j2++) {
           var X = units[p][i2], Y = units[q][j2];
-          if (!allowedI(X, j2) || !allowedI(Y, i2)) continue;
+          if (!allowedU(X, j2, q) || !allowedU(Y, i2, p)) continue;
           units[p][i2] = Y; units[q][j2] = X;
           var np = unitScore(p, units[p]), nq = unitScore(q, units[q]);
           if (np + nq > sc[p] + sc[q] + 1e-9) { sc[p] = np; sc[q] = nq; improved = true; }
@@ -517,12 +544,17 @@ var Engine = (function(){
       if (!prev || total > prev.total + 1e-9) found.set(key, { total:total, units:units.map(function(a){ return a.slice(); }), note:note || (prev && prev.note) || null });
     }
 
-    var stopped = false, r;
+    var stopped = false, r, lastFail = null;
     for (r = 0; r < restarts; r++) {
-      if (r >= 3 && now() - t0 > timeLimit) { stopped = true; break; }
+      if (r >= 3 && found.size && now() - t0 > timeLimit) { stopped = true; break; }
       var st = init(r === 0);
-      if (!st) return { error:'軸武将を置ける枠がありません。位置の指定が重なっていないか確認してください（例：1部隊で大将を2人指定）。' };
+      if (typeof st === 'string') { lastFail = st; continue; }   // 初期編成が作れなかったら、別の乱数でやり直す
       record(st.units, climb(st, null));
+    }
+    if (!found.size) {
+      return { error: lastFail === 'axis'
+        ? '軸武将を置ける枠がありません。位置の指定が重なっていないか確認してください（例：1部隊で大将を2人指定、大将時の兵科と部隊の兵科が違う武将を大将に指定）。'
+        : '大将時の兵科の条件を満たす編成が作れませんでした。部隊数や兵科を変えてみてください。' };
     }
 
     // 2位以下の候補：1位から1人または2人を外して、その人なしの最善を探す（顔ぶれの違う案を出すため）
@@ -541,7 +573,7 @@ var Engine = (function(){
       var okRep = true;
       banSets[bi].forEach(function(o){
         var Vs = V[o[0]][o[1]], rep = -1, out = units2[o[0]][o[1]];
-        for (var c = 0; c < N; c++) if (!used2[c] && !ban[c] && (rep < 0 || Vs[c] > Vs[rep])) rep = c;
+        for (var c = 0; c < N; c++) if (!used2[c] && !ban[c] && allowedU(c, o[1], o[0]) && (rep < 0 || Vs[c] > Vs[rep])) rep = c;
         if (rep < 0) { okRep = false; return; }
         units2[o[0]][o[1]] = rep; used2[out] = 0; used2[rep] = 1;
       });
@@ -631,7 +663,12 @@ var Engine = (function(){
       });
     });
     ens = uniq(ens);
-    if (ens.length > 3) lines.push('縁が' + ens.length + 'つ発動：' + ens.map(function(t){ return t.replace(/^縁「(.*?)」.*$/, '$1'); }).join('・') + '。');
+    if (ens.length > 3) {
+      // 同じ縁が複数の部隊で発動したときは「×2」とまとめる
+      var enCnt = {}, enOrder = [];
+      ens.forEach(function(t){ var n = t.replace(/^縁「(.*?)」.*$/, '$1'); if (!enCnt[n]) enOrder.push(n); enCnt[n] = (enCnt[n] || 0) + 1; });
+      lines.push('縁が' + ens.length + '件発動：' + enOrder.map(function(n){ return n + (enCnt[n] > 1 ? '×' + enCnt[n] : ''); }).join('・') + '。');
+    }
     else if (ens.length) lines.push(ens.join('。') + '。');
     if (syns.length) lines.push('相性：' + uniq(syns).join('／') + '。');
     // 左右の配置
@@ -670,6 +707,8 @@ Promise.all(['data/busho.json', 'data/weights.json', 'data/tags.json'].map(funct
   // 所持から消えた武将（データから削除された id）を除く
   owned = new Set(Array.from(owned).filter(function(id){ return BYID.has(id); }));
   if (!plan) plan = { units: Object.assign({}, W.presets[0].units), mode: Object.keys(W.mode_tag_weight)[0], axes: [] };
+  // データから消えた武将（id の変更など）を軸から外す
+  plan.axes = (plan.axes || []).filter(function(a){ return !a.id || BYID.has(a.id); });
   init();
 }).catch(function(e){
   $('#hsub').textContent = '読み込みエラー';
@@ -678,8 +717,9 @@ Promise.all(['data/busho.json', 'data/weights.json', 'data/tags.json'].map(funct
 
 function init(){
   var m = DATA.meta || {};
-  $('#hsub').textContent = 'シーズン' + (m.season || '?') + '・武将' + DATA.busho.length + '人・データ更新 ' + (m.updated || '?');
-  if (m.dummy) $('#dummy-banner').innerHTML = '<div class="banner">いまはダミーデータです。武将の技能・戦法は実際のゲームとは関係ありません。</div>';
+  var nd = DATA.busho.filter(function(b){ return b.dummy; }).length, nr = DATA.busho.length - nd;
+  $('#hsub').textContent = 'シーズン' + (m.season || '?') + '・実データ' + nr + '人' + (nd ? '・ダミー' + nd + '人' : '') + '・更新 ' + (m.updated || '?');
+  if (nd) $('#dummy-banner').innerHTML = '<div class="banner">ダミー武将' + nd + '人を含みます（名前に「（仮）」）。ダミーの技能・戦法・能力値は実際のゲームとは関係ありません。</div>';
   // タブ
   document.querySelectorAll('#tabs button').forEach(function(b){ b.onclick = function(){ showTab(b.dataset.v); }; });
   showTab(load(LS.tab, 'plan'));
@@ -864,7 +904,9 @@ function bushoRow(b, extra){
 function tagsHtml(tags){ return (tags || []).map(function(t){ return '<span class="tag' + (TAGS.unit.indexOf(t) >= 0 ? ' t' : '') + '">' + esc(t) + '</span>'; }).join(''); }
 function detailHtml(b){
   var h = '<dl class="bdetail">';
+  if (b.missing && b.missing.length) h += '<dd class="warnline">未入力・未確認：' + esc(b.missing.join('、')) + '</dd>';
   h += '<dt>兵科適性</dt><dd>' + esc(aptLine(b)) + '</dd>';
+  h += '<dt>大将時の兵科</dt><dd>' + (b.taisho_heika ? esc(b.taisho_heika) + '<span class="muted">（大将にすると部隊はこの兵科。ほかの兵科の部隊では大将にしない）</span>' : '<span class="muted">空欄（兵科適性で判定）</span>') + '</dd>';
   var st = b.stats || {};
   h += '<dt>能力</dt><dd>' + esc(TAGS.stats.map(function(k){ return k + ' ' + (st[k] != null ? st[k] : '-'); }).join('　')) +
     '<br>戦力 ' + esc(b.power != null ? b.power : '-') + '　天賦 ' + esc(b.tenpu != null ? b.tenpu : '-') + '</dd>';
@@ -922,8 +964,11 @@ function renderSkill(){
 /* ---------- データ ---------- */
 function buildData(){
   var m = DATA.meta || {};
+  var nd = DATA.busho.filter(function(b){ return b.dummy; }).length;
+  var miss = DATA.busho.filter(function(b){ return b.missing && b.missing.length; });
   $('#data-meta').innerHTML = '<div><b>武将データ</b>（data/busho.json）</div>' +
-    '<div class="muted">シーズン ' + esc(m.season) + '／更新 ' + esc(m.updated) + '／武将 ' + DATA.busho.length + '人／スキーマ v' + esc(m.schema_version) + '</div>' +
+    '<div class="muted">シーズン ' + esc(m.season) + '／更新 ' + esc(m.updated) + '／実データ ' + (DATA.busho.length - nd) + '人・ダミー ' + nd + '人／スキーマ v' + esc(m.schema_version) + '</div>' +
+    (miss.length ? '<div class="warnline">未入力・未確認の項目がある武将：' + esc(miss.map(function(b){ return b.name + '（' + b.missing.join('、') + '）'; }).join('／')) + '</div>' : '') +
     '<div class="muted">出典：' + esc(m.source) + '</div>';
   var w = validate();
   $('#data-warn').innerHTML = '<div><b>データの点検</b></div>' + (w.length ? '<ul class="why">' + w.map(function(t){ return '<li class="ng">' + esc(t) + '</li>'; }).join('') + '</ul>' : '<div class="muted">問題は見つかりませんでした。</div>');
@@ -933,19 +978,26 @@ function validate(){
   var out = [], ids = {}, eff = new Set(TAGS.effect), unit = new Set(TAGS.unit), enCount = {};
   DATA.busho.forEach(function(b){ if (Array.isArray(b.en)) b.en.forEach(function(t){ enCount[t] = (enCount[t] || 0) + 1; }); });
   DATA.busho.forEach(function(b){
+    // missing に書いてある項目（未入力・未確認と分かっているもの）は、ここでは重ねて警告しない
+    var miss = new Set(b.missing || []);
+    var chk = function(label, bad, msg){ if (bad && !miss.has(label)) out.push(b.name + '：' + msg); };
     if (ids[b.id]) out.push('id が重複：' + b.id); ids[b.id] = 1;
-    if (TAGS.rarity.indexOf(b.rarity) < 0) out.push(b.name + '：レア度「' + b.rarity + '」が tags.json にない');
-    TAGS.unit.forEach(function(k){ var a = (b.aptitude || {})[k]; if (TAGS.aptitude.indexOf(a) < 0) out.push(b.name + '：' + k + 'の適性が未入力または不正（' + a + '）'); });
+    if (!/^[a-z0-9_]+$/.test(b.id)) out.push(b.name + '：id は英小文字・数字・_ だけで書く（' + b.id + '）');
+    chk('レア度', TAGS.rarity.indexOf(b.rarity) < 0, 'レア度「' + b.rarity + '」が tags.json にない');
+    if (b.taisho_heika && TAGS.unit.indexOf(b.taisho_heika) < 0) out.push(b.name + '：大将時の兵科「' + b.taisho_heika + '」が tags.json にない');
+    TAGS.unit.forEach(function(k){ var a = (b.aptitude || {})[k]; chk('適性:' + k, TAGS.aptitude.indexOf(a) < 0, k + 'の適性が未入力または不正（' + a + '）'); });
     Engine.elements(b).forEach(function(e){
       e.tags.forEach(function(t){ if (!eff.has(t) && !unit.has(t)) out.push(b.name + '：' + e.label + 'のタグ「' + t + '」が tags.json にない'); });
     });
-    if ((b.skills || []).length !== 4) out.push(b.name + '：技能が4つではない（' + (b.skills || []).length + '）');
+    chk('技能', (b.skills || []).length !== 4, '技能が4つではない（' + (b.skills || []).length + '）');
+    chk('皆伝', (b.kaiden || []).length !== 4, '皆伝が4つではない（' + (b.kaiden || []).length + '）');
+    chk('戦法の名前', !(b.senpo && b.senpo.name), '戦法の名前が未入力');
     if (!Array.isArray(b.en) || b.en.some(function(t){ return typeof t !== 'string'; })) out.push(b.name + '：縁は文字（タグ）の配列で書く');
     else b.en.forEach(function(t){ if ((enCount[t] || 0) < 2) out.push(b.name + '：縁「' + t + '」を持つ武将がほかにいない（このままでは発動しない）'); });
-    TAGS.stats.forEach(function(k){ if (typeof (b.stats || {})[k] !== 'number') out.push(b.name + '：能力「' + k + '」が未入力または数値でない'); });
-    if (typeof b.power !== 'number') out.push(b.name + '：戦力が未入力または数値でない');
-    if (typeof b.tenpu !== 'number') out.push(b.name + '：天賦（天賦値）が未入力または数値でない');
-    if (b.season !== DATA.meta.season) out.push(b.name + '：皆伝がシーズン' + b.season + 'の情報（現在 ' + DATA.meta.season + '）');
+    TAGS.stats.forEach(function(k){ chk(k, typeof (b.stats || {})[k] !== 'number', '能力「' + k + '」が未入力または数値でない'); });
+    chk('戦力', typeof b.power !== 'number', '戦力が未入力または数値でない');
+    chk('天賦', typeof b.tenpu !== 'number', '天賦（天賦値）が未入力または数値でない');
+    if ((b.kaiden || []).length && b.season !== DATA.meta.season) out.push(b.name + '：皆伝がシーズン' + b.season + 'の情報（現在 ' + DATA.meta.season + '）');
   });
   return out;
 }
